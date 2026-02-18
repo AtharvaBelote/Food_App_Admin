@@ -2,7 +2,9 @@ import { images } from "@/constants/images";
 import { router } from "expo-router";
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { icons } from "../constants/icons";
+import { icons } from "../../constants/icons";
+
+
 const Welcome = () => {
   const handleSignIn = () => {
     Alert.alert("Sign In", "Sign In flow is coming soon.");
@@ -31,11 +33,11 @@ const Welcome = () => {
       {/* Content */}
       <View className="flex-1 px-6 pt-6">
         <Text className="text-gray-600 text-base mb-4 text-center">
-          Ready to manage orders and menus?
+          Ready to deliver Fresh food to customer&apos;s door-step?
         </Text>
 
         <TouchableOpacity
-          className="bg-yellow-400 w-full rounded-full py-4 mt-2 shadow-md"
+          className="bg-primary w-full rounded-full py-4 mt-2 shadow-md"
           onPress={handleSignIn}
           accessibilityRole="button"
           accessibilityLabel="Sign in"

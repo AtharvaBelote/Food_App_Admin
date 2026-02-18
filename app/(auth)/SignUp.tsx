@@ -1,3 +1,4 @@
+import FormInput from "@/components/FormInput";
 import { router } from "expo-router";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
@@ -5,23 +6,49 @@ import {
   Alert,
   Image,
   KeyboardAvoidingView,
+  KeyboardTypeOptions,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import { TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { icons } from "../constants/icons";
-import { images } from "../constants/images";
-import { auth } from "../FirebaseConfig";
-import { Eye } from "lucide-react-native";
+import { icons } from "../../constants/icons";
+import { images } from "../../constants/images";
+import { auth } from "../../FirebaseConfig";
+
+type Field = {
+  label: string;
+  value: string;
+  setter: React.Dispatch<React.SetStateAction<string>>;
+  secure?: boolean;
+  keyboardType?: KeyboardTypeOptions;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+};
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+
+  const fields: Field[] = [
+    { label: "Restaurant name", value: name, setter: setName },
+    {
+      label: "Email",
+      value: email,
+      setter: setEmail,
+      keyboardType: "email-address",
+      autoCapitalize: "none",
+    },
+    { label: "Password", value: password, setter: setPassword, secure: true },
+    {
+      label: "Confirm Password",
+      value: confirm,
+      setter: setConfirm,
+      secure: true,
+    },
+  ];
 
   const handleSignUp = () => {
     if (!name || !email || !password) {
@@ -70,8 +97,7 @@ const SignUp = () => {
               Create Account
             </Text>
             <Text className="text-white/90 mt-2 max-w-[260px]">
-              Join Foody to connect your local restaurant and reach more
-              customers.
+              Join Foody to get started.
             </Text>
           </View>
         </View>
@@ -79,65 +105,21 @@ const SignUp = () => {
         {/* Form */}
         <View className="flex-1 px-6 pt-6">
           <View>
-            <TextInput
-              label="Restaurant name"
-              value={name}
-              onChangeText={setName}
-              mode="outlined"
-              selectionColor="#9CA3AF"
-              style={styles.input}
-              activeOutlineColor="#facc15"
-              outlineColor="black"
-              dense
-              outlineStyle={{ borderRadius: 10 }}
-            />
-
-            <TextInput
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              mode="outlined"
-              selectionColor="#9CA3AF"
-              style={styles.input}
-              activeOutlineColor="#facc15"
-              outlineColor="black"
-              dense
-              outlineStyle={{ borderRadius: 10 }}
-            />
-
-            <TextInput
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              mode="outlined"
-              selectionColor="#9CA3AF"
-              style={styles.input}
-              activeOutlineColor="#facc15"
-              outlineColor="black"
-              dense
-              outlineStyle={{ borderRadius: 10 }}
-            />
-
-            <TextInput
-              label="Confirm Password"
-              value={confirm}
-              onChangeText={setConfirm}
-              secureTextEntry
-              mode="outlined"
-              selectionColor="#9CA3AF"
-              style={styles.input}
-              activeOutlineColor="#facc15"
-              outlineColor="black"
-              dense
-              outlineStyle={{ borderRadius: 10 }}
-            />
+            {fields.map((field, index) => (
+              <FormInput
+                key={index}
+                label={field.label}
+                value={field.value}
+                onChangeText={field.setter}
+                secureTextEntry={field.secure}
+                keyboardType={field.keyboardType}
+                autoCapitalize={field.autoCapitalize}
+              />
+            ))}
           </View>
 
           <TouchableOpacity
-            className="bg-yellow-400 rounded-full py-4 mt-6"
+            className="bg-primary rounded-full py-4 mt-6"
             onPress={signUp}
           >
             <Text className="text-center text-white font-semibold text-lg">
