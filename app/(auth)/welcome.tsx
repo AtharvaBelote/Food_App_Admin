@@ -1,14 +1,11 @@
 import { images } from "@/constants/images";
 import { router } from "expo-router";
-import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { icons } from "../../constants/icons";
 
 
 const Welcome = () => {
-  const handleSignIn = () => {
-    Alert.alert("Sign In", "Sign In flow is coming soon.");
-  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -38,7 +35,7 @@ const Welcome = () => {
 
         <TouchableOpacity
           className="bg-primary w-full rounded-full py-4 mt-2 shadow-md"
-          onPress={handleSignIn}
+          onPress={() => {router.replace("/(auth)/login")}}
           accessibilityRole="button"
           accessibilityLabel="Sign in"
         >

@@ -1,8 +1,8 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { TextInput } from 'react-native-paper';
-import type { KeyboardTypeOptions } from 'react-native';
-import { colors } from '../constants/colors';
+import React from "react";
+import type { KeyboardTypeOptions } from "react-native";
+import { StyleSheet } from "react-native";
+import { TextInput } from "react-native-paper";
+import { colors } from "../../constants/colors";
 
 type Props = {
   label: string;
@@ -10,7 +10,8 @@ type Props = {
   onChangeText: (text: string) => void;
   secureTextEntry?: boolean;
   keyboardType?: KeyboardTypeOptions;
-  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  error: boolean;
 };
 
 const FormInput: React.FC<Props> = ({
@@ -18,8 +19,9 @@ const FormInput: React.FC<Props> = ({
   value,
   onChangeText,
   secureTextEntry = false,
-  keyboardType = 'default',
-  autoCapitalize = 'sentences',
+  keyboardType = "default",
+  autoCapitalize = "sentences",
+  error = false,
 }) => {
   return (
     <TextInput
@@ -35,6 +37,7 @@ const FormInput: React.FC<Props> = ({
       outlineColor="black"
       dense
       outlineStyle={{ borderRadius: 30 }}
+      error={error}
     />
   );
 };
@@ -43,7 +46,7 @@ const styles = StyleSheet.create({
   input: {
     marginVertical: 2,
     fontSize: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     height: 50,
   },
 });

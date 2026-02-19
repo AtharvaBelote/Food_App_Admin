@@ -1,9 +1,11 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { initializeAuth, getReactNativePersistence, GoogleAuthProvider } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from 'firebase/storage';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -28,3 +30,5 @@ export const auth = initializeAuth(app, {
 });
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+const WEB_CLIENT_ID = '177771763071-5kl1kusbpumpn8bpd6b75nrsqkju1q72.apps.googleusercontent.com';

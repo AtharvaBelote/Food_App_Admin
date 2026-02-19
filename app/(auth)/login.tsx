@@ -1,15 +1,12 @@
 import FormInput from "@/components/ui/FormInput";
 import { router } from "expo-router";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import React, { useState } from "react";
 import {
   Alert,
   Image,
   KeyboardAvoidingView,
   KeyboardTypeOptions,
-  Platform,
-  ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -30,15 +27,12 @@ type Field = {
   autoCapitalize?: "none" | "sentences" | "words" | "characters";
 };
 
-const SignUp = () => {
-  const [name, setName] = useState("");
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [fields, setFields] = useState<Field[]>([
-    { label: "Your full name", value: name, setter: setName, isError: false },
     {
       label: "Email",
       value: email,
@@ -54,123 +48,88 @@ const SignUp = () => {
       secure: true,
       isError: false,
     },
-    {
-      label: "Confirm Password",
-      value: confirm,
-      setter: setConfirm,
-      secure: true,
-      isError: false,
-    },
   ]);
 
+  // Update fields when email/password change
   React.useEffect(() => {
     setFields([
-      {
-        label: "Your full name",
-        value: name,
-        setter: setName,
-        isError: fields[0]?.isError || false,
-        autoCapitalize: "words",
-      },
       {
         label: "Email",
         value: email,
         setter: setEmail,
         keyboardType: "email-address",
         autoCapitalize: "none",
-        isError: fields[1]?.isError || false,
+        isError: fields[0]?.isError || false,
       },
       {
         label: "Password",
         value: password,
         setter: setPassword,
         secure: true,
-        isError: fields[2]?.isError || false,
-      },
-      {
-        label: "Confirm Password",
-        value: confirm,
-        setter: setConfirm,
-        secure: true,
-        isError: fields[3]?.isError || false,
+        isError: fields[1]?.isError || false,
       },
     ]);
-  }, [name, email, password, confirm]);
+  }, [email, password]);
 
   const handleChange = (index: number, text: string) => {
-    // Call the original setter
     fields[index].setter(text);
-
     // Clear error for this field when user types
-    setFields((prevFields) =>
-      prevFields.map((field, i) =>
+    setFields((prev) =>
+      prev.map((field, i) =>
         i === index
           ? { ...field, isError: false, errorMessage: undefined }
-          : field,
-      ),
+          : field
+      )
     );
   };
 
   const setFieldError = (label: string, errorMessage: string) => {
-    setFields((prevFields) =>
-      prevFields.map((field) =>
+    setFields((prev) =>
+      prev.map((field) =>
         field.label === label
           ? { ...field, isError: true, errorMessage }
-          : field,
-      ),
+          : field
+      )
     );
   };
 
-  const signUp = async () => {
+  const handleLogin = async () => {
+    // Reset errors
+    setFields((prev) =>
+      prev.map((field) => ({
+        ...field,
+        isError: false,
+        errorMessage: undefined,
+      }))
+    );
+
+    // Validate
+    if (!email || !password) {
+      if (!email) setFieldError("Email", "Email is required");
+      if (!password) setFieldError("Password", "Password is required");
+      return;
+    }
+
+    setLoading(true);
     try {
-      setFields((prevFields) =>
-        prevFields.map((field) => ({
-          ...field,
-          isError: false,
-          errorMessage: undefined,
-        })),
-      );
-
-      if (!name || !email || !password || !confirm) {
-        // Set errors for empty fields
-        if (!name)
-          setFieldError("Restaurant name", "Restaurant name is required");
-        if (!email) setFieldError("Email", "Email is required");
-        if (!password) setFieldError("Password", "Password is required");
-        if (!confirm)
-          setFieldError("Confirm Password", "Please confirm your password");
-        return;
-      }
-
-      if (password !== confirm) {
-        setFieldError("Confirm Password", "Passwords do not match");
-        return;
-      }
-
-      if (password.length < 6) {
-        setFieldError(
-          "Weak Password",
-          "Password should be at least 6 characters.",
-        );
-        return;
-      }
-
-      setLoading(true);
-
-      const user = await createUserWithEmailAndPassword(auth, email, password);
-
-      if (user) router.replace("/test");
+      await signInWithEmailAndPassword(auth, email, password);
+      router.replace("/test"); // Navigate to main app screen
     } catch (error: any) {
       console.log(error);
-
-      if (error.code === "auth/email-already-in-use") {
-        setFieldError("Email", "This email is already registered");
-      } else if (error.code === "auth/weak-password") {
-        setFieldError("Password", "Password should be at least 6 characters");
+      // Handle Firebase login errors
+      if (error.code === "auth/user-not-found") {
+        setFieldError("Email", "No account found with this email");
+      } else if (error.code === "auth/wrong-password") {
+        setFieldError("Password", "Incorrect password");
       } else if (error.code === "auth/invalid-email") {
         setFieldError("Email", "Invalid email format");
+      } else if (error.code === "auth/too-many-requests") {
+        Alert.alert(
+          "Too many attempts",
+          "Access temporarily disabled due to many failed login attempts. Try again later."
+        );
       } else {
-        Alert.alert("Sign up failed", error.message);
+        Alert.alert("Login failed", error.message);
       }
     } finally {
       setLoading(false);
@@ -179,8 +138,7 @@ const SignUp = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView>
-      <KeyboardAvoidingView  behavior="padding" className="flex-1">
+      <KeyboardAvoidingView behavior="padding" className="flex-1">
         {/* Top image with overlay title */}
         <View className="h-[45%] relative">
           <Image
@@ -191,10 +149,10 @@ const SignUp = () => {
           <View className="absolute inset-0 bg-black/30" />
           <View className="absolute bottom-8 left-6">
             <Text className="text-white text-3xl font-extrabold">
-              Create Account
+              Welcome Back
             </Text>
             <Text className="text-white/90 mt-2 max-w-[260px]">
-              Join Foody to get started.
+              Sign in to continue.
             </Text>
           </View>
         </View>
@@ -202,7 +160,7 @@ const SignUp = () => {
         {/* Form */}
         <View className="flex-1 px-6 pt-6">
           <View>
-            {fields.map((field, index: number) => (
+            {fields.map((field, index) => (
               <View key={index}>
                 <FormInput
                   label={field.label}
@@ -211,7 +169,7 @@ const SignUp = () => {
                   secureTextEntry={field.secure}
                   keyboardType={field.keyboardType}
                   autoCapitalize={field.autoCapitalize}
-                  //@ts-ignore
+                  //@ts-ignore – if your FormInput expects an error prop
                   isError={field.isError}
                   error={field.isError}
                 />
@@ -224,13 +182,18 @@ const SignUp = () => {
             ))}
           </View>
 
+          {/* Forgot password (optional) */}
+          <TouchableOpacity className="self-end mt-2" onPress={() => {router.navigate("/(auth)/forgot-password")}}>
+            <Text className="text-gray-500">Forgot Password?</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             className={`bg-primary rounded-full py-4 mt-6 ${loading ? "opacity-50" : ""}`}
-            onPress={signUp}
+            onPress={handleLogin}
             disabled={loading}
           >
             <Text className="text-center text-white font-semibold text-lg">
-              {loading ? "Creating Account..." : "Sign Up"}
+              {loading ? "Signing In..." : "Sign In"}
             </Text>
           </TouchableOpacity>
 
@@ -244,24 +207,15 @@ const SignUp = () => {
           </View>
 
           <View className="flex-row justify-center mt-6">
-            <Text className="text-gray-500">Already have an account? </Text>
-            <TouchableOpacity onPress={() => router.replace("/(auth)/login")}>
-              <Text className="text-black font-semibold">Sign In</Text>
+            <Text className="text-gray-500">Don&apos;t have an account? </Text>
+            <TouchableOpacity onPress={() => router.replace("/(auth)/SignUp")}>
+              <Text className="text-black font-semibold">Sign Up</Text>
             </TouchableOpacity>
           </View>
         </View>
       </KeyboardAvoidingView>
-      </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default SignUp;
-
-const styles = StyleSheet.create({
-  input: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    paddingHorizontal: 1,
-  },
-});
+export default Login;
