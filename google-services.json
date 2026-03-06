@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "177771763071",
+    "firebase_url": "https://food-app-88c52-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "food-app-88c52",
+    "storage_bucket": "food-app-88c52.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:177771763071:android:a5f8e7d03fdffa602ab64a",
+        "android_client_info": {
+          "package_name": "com.genzopia.foodapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "177771763071-5kl1kusbpumpn8bpd6b75nrsqkju1q72.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD283tt_KVfGiH2cmaVE7XiY0Ji1XtE1rM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "177771763071-5kl1kusbpumpn8bpd6b75nrsqkju1q72.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
